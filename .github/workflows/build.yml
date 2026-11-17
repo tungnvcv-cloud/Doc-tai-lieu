@@ -1,0 +1,32 @@
+name: Build APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Giải nén project
+        run: |
+          unzip -o -q DocViewer.zip
+          chmod +x DocViewer/gradlew
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Build APK
+        working-directory: DocViewer
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: XemTaiLieu-apk
+          path: DocViewer/app/build/outputs/apk/release/*.apk
