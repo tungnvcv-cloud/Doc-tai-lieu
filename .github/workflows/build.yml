@@ -20,11 +20,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
-
       - name: Build APK
         working-directory: DocViewer
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: |
+          # Máy build của GitHub có sẵn Android SDK
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
